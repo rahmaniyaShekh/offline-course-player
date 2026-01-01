@@ -1,12 +1,20 @@
 ---
+<<<<<<< HEAD
 name: Feature Request
 about: Suggest an idea for this project
 title: '[FEATURE] '
 labels: 'enhancement'
+=======
+name: Feature request
+about: Suggest an idea for this project
+title: ''
+labels: ''
+>>>>>>> 84e469dcc39f1a575d3677f5d0a6a16b722b1126
 assignees: ''
 
 ---
 
+<<<<<<< HEAD
 ## Feature Description
 A clear and concise description of the feature you'd like to see.
 
@@ -44,3 +52,16 @@ Add any other context, mockups, or screenshots about the feature request here.
 
 ## Related Issues
 Link any related issues or discussions.
+=======
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+
+**Additional context**
+Add any other context or screenshots about the feature request here.
+>>>>>>> 84e469dcc39f1a575d3677f5d0a6a16b722b1126
