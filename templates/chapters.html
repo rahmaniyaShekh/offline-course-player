@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--
+    COURSE CHAPTERS DASHBOARD - ANALYTICS & CHAPTER SELECTION PAGE
+    
+    This page serves as the main dashboard for the video learning platform,
+    providing analytics insights and chapter navigation for course content.
+    
+    KEY FEATURES:
+    - Real-time learning analytics and progress tracking
+    - Chapter grid with visual progress indicators  
+    - Settings management with theme switching
+    - Responsive design with Material Design icons
+    - Glass morphism effects and smooth animations
+    
+    ARCHITECTURE:
+    - Vanilla JavaScript with modular design
+    - CSS custom properties for easy theming
+    - RESTful API integration with Flask backend
+    - SQLite database for progress and settings persistence
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ DSA Course - Chapters</title>
+    <style>
+        :root {
+            /* ==================== COLORS - DARK THEME (Default) ==================== */
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #252525;
+
+            /* Glass/Transparency */
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --modal-overlay: rgba(0, 0, 0, 0.7);
+            --progress-bar-bg: rgba(255, 255, 255, 0.08);
+            --toggle-bg: rgba(255, 255, 255, 0.1);
+            --close-btn-bg: rgba(255, 255, 255, 0.1);
+            --close-btn-hover: rgba(255, 255, 255, 0.2);
+
+            /* Gradients */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+
+            /* Gradient Colors (for animated background) */
+            --gradient-color-1: rgba(102, 126, 234, 0.08);
+            --gradient-color-2: rgba(118, 75, 162, 0.08);
+            --gradient-color-3: rgba(75, 166, 254, 0.08);
+
+            /* Primary Colors */
+            --primary-color: #667eea;
+            --primary-hover: #7c8ff5;
+            --accent-color: #764ba2;
+
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #6b6b6b;
+
+            /* Status Colors */
+            --status-progress-bg: rgba(75, 166, 254, 0.15);
+            --status-progress-border: rgba(75, 166, 254, 0.3);
+            --status-progress-text: #4facfe;
+            --status-completed-bg: rgba(0, 242, 254, 0.15);
+            --status-completed-border: rgba(0, 242, 254, 0.3);
+            --status-completed-text: #00f2fe;
+
+            /* Spinner */
+            --spinner-border: rgba(255, 255, 255, 0.1);
+            --spinner-color: #667eea;
+
+            /* Range Value Badge */
+            --range-value-bg: rgba(102, 126, 234, 0.2);
+
+            --chapter-num-bg: #2d2d2d;
+            /* Modern Dark Slate */
+            --chapter-num-text: #667eea;
+            /* Primary accent */
+            --icon-bg-solid: #1a1a1a;
+
+            /* ==================== SIZES ==================== */
+            /* Container */
+            --container-max-width: 1400px;
+            --container-padding: 40px;
+            --container-padding-bottom: 80px;
+            --container-padding-mobile: 20px;
+
+            /* Header */
+            --header-padding: 30px 40px;
+            --header-padding-mobile: 20px;
+            --header-z-index: 1000;
+
+            /* Logo */
+            --logo-icon-size: 50px;
+            --logo-icon-font-size: 24px;
+            --logo-title-size: 24px;
+            --logo-title-size-mobile: 20px;
+            --logo-subtitle-size: 12px;
+            --logo-gap: 16px;
+
+            /* Cards */
+            --card-padding: 24px;
+            --chapter-card-padding: 28px;
+            --card-gap: 20px;
+            --chapter-gap: 24px;
+
+            /* Chapter Number */
+            --chapter-number-size: 48px;
+            --chapter-number-font-size: 20px;
+
+            /* Stat Card */
+            --stat-icon-size: 40px;
+            --stat-icon-font-size: 20px;
+            --stat-value-size: 32px;
+            --stat-label-size: 13px;
+            --stat-subtext-size: 12px;
+            --stat-card-min-width: 250px;
+
+            /* Grid */
+            --chapter-card-min-width: 320px;
+
+            /* Typography */
+            --section-title-size: 28px;
+            --section-title-size-mobile: 22px;
+            --chapter-title-size: 18px;
+            --meta-font-size: 13px;
+            --meta-icon-size: 16px;
+            --settings-btn-font-size: 14px;
+
+            /* Modal */
+            --modal-max-width: 500px;
+            --modal-padding: 32px;
+            --modal-title-size: 24px;
+            --modal-z-index: 2000;
+            --close-btn-size: 32px;
+            --close-btn-font-size: 20px;
+
+            /* Settings */
+            --setting-label-size: 14px;
+            --setting-desc-size: 12px;
+            --range-value-size: 13px;
+
+            /* Progress Bar */
+            --progress-bar-height: 6px;
+            --progress-label-size: 12px;
+
+            /* Toggle Switch */
+            --toggle-width: 50px;
+            --toggle-height: 26px;
+            --toggle-slider-size: 20px;
+            --toggle-slider-offset: 3px;
+            --toggle-slider-translate: 24px;
+
+            /* Range Input */
+            --range-height: 6px;
+            --range-thumb-size: 18px;
+
+            /* Spinner */
+            --spinner-size: 40px;
+            --spinner-border-width: 3px;
+
+            /* ==================== BORDER RADIUS ==================== */
+            --radius-xs: 3px;
+            --radius-sm: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 20px;
+            --radius-3xl: 24px;
+            --radius-full: 50%;
+            --radius-pill: 13px;
+            --radius-status: 20px;
+
+            /* ==================== SPACING ==================== */
+            --gap-xs: 6px;
+            --gap-sm: 8px;
+            --gap-md: 12px;
+            --gap-lg: 16px;
+            --gap-xl: 20px;
+            --gap-2xl: 24px;
+
+            /* ==================== EFFECTS ==================== */
+            --backdrop-blur: 15px;
+            --modal-blur: 10px;
+
+            /* ==================== TRANSITIONS ==================== */
+            --transition-fast: 0.2s;
+            --transition-normal: 0.3s;
+            --transition-slow: 0.4s;
+            --transition-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+            /* ==================== ANIMATIONS ==================== */
+            --animation-bg-duration: 20s;
+            --animation-spin-duration: 1s;
+            --animation-fade-duration: 0.3s;
+        }
+
+        /* ==================== LIGHT THEME OVERRIDES ==================== */
+        body.light-theme {
+            /* Backgrounds */
+            --bg-primary: #f8fafc;
+            /* Clean slate background */
+            --bg-secondary: #ffffff;
+            /* White cards */
+            --bg-tertiary: #f1f5f9;
+
+            /* UI Elements */
+            --glass-bg: rgba(255, 255, 255, 0.2);
+            --glass-border: #e2e8f0;
+            --modal-overlay: rgba(15, 23, 42, 0.5);
+            --progress-bar-bg: #e2e8f0;
+            --toggle-bg: #cbd5e1;
+            --close-btn-bg: #f1f5f9;
+            --close-btn-hover: #e2e8f0;
+
+            /* Updated Palette: Modern Indigo & Slate */
+            --primary-color: #4f46e5;
+            /* Modern Indigo */
+            --primary-hover: #3730a3;
+            /* Deep Indigo (No red) */
+            --accent-color: #0ea5e9;
+            /* Sky Blue accent */
+
+            /* Gradients (Used only for large background blobs, subtler) */
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+
+            /* Background Animation Colors */
+            --gradient-color-1: rgba(79, 70, 229, 0.08);
+            --gradient-color-2: rgba(14, 165, 233, 0.08);
+            --gradient-color-3: rgba(16, 185, 129, 0.06);
+
+            /* Text - Professional Contrast */
+            --text-primary: #1e293b;
+            /* Slate 800 */
+            --text-secondary: #475569;
+            /* Slate 600 */
+            --text-muted: #94a3b8;
+            /* Slate 400 */
+
+            /* Status - Solid Colors for Icons/Labels */
+            --status-progress-bg: #e0f2fe;
+            --status-progress-border: #bae6fd;
+            --status-progress-text: #0284c7;
+
+            --status-completed-bg: #dcfce7;
+            --status-completed-border: #bbf7d0;
+            --status-completed-text: #16a34a;
+
+            /* Spinner & Interactive */
+            --spinner-border: #e2e8f0;
+            --spinner-color: #4f46e5;
+            --range-value-bg: #eef2ff;
+
+            --chapter-num-bg: #e2e8f0;
+            /* Light Modern Slate */
+            --chapter-num-text: #4f46e5;
+            /* Professional Indigo */
+            --icon-bg-solid: #f1f5f9;
+
+            --backdrop-blur: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, var(--gradient-color-1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--gradient-color-2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, var(--gradient-color-3) 0%, transparent 50%);
+            z-index: -1;
+            animation: bgShift var(--animation-bg-duration) ease infinite;
+        }
+
+        @keyframes bgShift {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: var(--header-padding);
+            backdrop-filter: blur(var(--backdrop-blur));
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: var(--header-z-index);
+        }
+
+        .header-content {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: var(--logo-gap);
+        }
+
+        .logo-icon {
+            width: var(--logo-icon-size);
+            height: var(--logo-icon-size);
+            background: var(--primary-color) !important;
+            /* Solid color */
+            color: white;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: var(--logo-icon-font-size);
+        }
+
+        .logo-text h1 {
+            font-size: var(--logo-title-size);
+            font-weight: 600;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            font-size: var(--logo-subtitle-size);
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .settings-btn {
+            padding: var(--gap-md) var(--gap-2xl);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            cursor: pointer;
+            backdrop-filter: blur(var(--modal-blur));
+            transition: all var(--transition-normal);
+            font-size: var(--settings-btn-font-size);
+            display: flex;
+            align-items: center;
+            gap: var(--gap-sm);
+        }
+
+        .settings-btn:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+
+        /* Global SVG Styles */
+        svg {
+            fill: currentColor;
+            display: block;
+        }
+
+        .settings-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .close-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .section-title svg {
+            width: 24px;
+            height: 24px;
+            margin-right: var(--spacing-sm);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: var(--container-padding) var(--container-padding) var(--container-padding-bottom);
+        }
+
+        /* Analytics Section */
+        .analytics-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(var(--stat-card-min-width), 1fr));
+            gap: var(--card-gap);
+            margin-bottom: var(--container-padding);
+        }
+
+        .stat-card {
+            padding: var(--card-padding);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--backdrop-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: var(--primary-gradient);
+            opacity: 0.1;
+            border-radius: var(--radius-full);
+            transform: translate(30%, -30%);
+        }
+
+        .stat-card:hover {
+            background: var(--glass-bg);
+            border-color: var(--primary-color);
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--gap-md);
+            margin-bottom: var(--gap-md);
+        }
+
+        .stat-icon {
+            width: var(--stat-icon-size);
+            height: var(--stat-icon-size);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--stat-icon-font-size);
+            background: var(--icon-bg-solid) !important;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .stat-icon.primary { color: var(--primary-color); }
+        .stat-icon.secondary { color: var(--accent-color); }
+        .stat-icon.success { color: var(--status-completed-text); }
+
+        .stat-label {
+            font-size: var(--stat-label-size);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: var(--stat-value-size);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-subtext {
+            font-size: var(--stat-subtext-size);
+            color: var(--text-secondary);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: var(--section-title-size);
+            font-weight: 600;
+            margin-bottom: var(--gap-2xl);
+            display: flex;
+            align-items: center;
+            gap: var(--gap-md);
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, var(--glass-border), transparent);
+        }
+
+        /* Chapters Grid */
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--chapter-card-min-width), 1fr));
+            gap: var(--chapter-gap);
+        }
+
+        .chapter-card {
+            padding: var(--chapter-card-padding);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--backdrop-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            cursor: pointer;
+            transition: all var(--transition-slow) var(--transition-bounce);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+            z-index: 0;
+        }
+
+        .chapter-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .chapter-card:hover::before {
+            opacity: 0.08;
+        }
+
+        .chapter-card>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: var(--gap-xl);
+        }
+
+        .chapter-number {
+            width: var(--chapter-number-size);
+            height: var(--chapter-number-size);
+            background: var(--chapter-num-bg) !important;
+            color: var(--chapter-num-text) !important;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--chapter-number-font-size);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .chapter-status {
+            padding: var(--gap-xs) var(--gap-md);
+            background: var(--status-progress-bg);
+            border: 1px solid var(--status-progress-border);
+            border-radius: var(--radius-status);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--status-progress-text);
+            backdrop-filter: blur(var(--modal-blur));
+        }
+
+        .chapter-status.completed {
+            background: var(--status-completed-bg);
+            border-color: var(--status-completed-border);
+            color: var(--status-completed-text);
+        }
+
+        .chapter-title {
+            font-size: var(--chapter-title-size);
+            font-weight: 600;
+            margin-bottom: var(--gap-md);
+            line-height: 1.4;
+        }
+
+        .chapter-meta {
+            display: flex;
+            gap: var(--gap-lg);
+            margin-bottom: var(--gap-lg);
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--gap-xs);
+            font-size: var(--meta-font-size);
+            color: var(--text-secondary);
+        }
+
+        .meta-icon {
+            font-size: var(--meta-icon-size);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: var(--gap-lg);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--progress-label-size);
+            color: var(--text-secondary);
+            margin-bottom: var(--gap-sm);
+        }
+
+        .progress-bar-bg {
+            height: var(--progress-bar-height);
+            background: var(--progress-bar-bg);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-md);
+            transition: width 0.6s var(--transition-bounce);
+        }
+
+        /* Settings Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            backdrop-filter: blur(var(--modal-blur));
+            z-index: var(--modal-z-index);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn var(--animation-fade-duration);
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            backdrop-filter: blur(var(--backdrop-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-3xl);
+            padding: var(--modal-padding);
+            max-width: var(--modal-max-width);
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp var(--animation-fade-duration);
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--gap-2xl);
+        }
+
+        .modal-title {
+            font-size: var(--modal-title-size);
+            font-weight: 600;
+        }
+
+        .close-btn {
+            width: var(--close-btn-size);
+            height: var(--close-btn-size);
+            background: var(--close-btn-bg);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: var(--close-btn-font-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .close-btn:hover {
+            background: var(--close-btn-hover);
+        }
+
+        .setting-item {
+            margin-bottom: var(--gap-2xl);
+        }
+
+        .setting-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--gap-sm);
+            font-size: var(--setting-label-size);
+        }
+
+        .setting-description {
+            font-size: var(--setting-desc-size);
+            color: var(--text-secondary);
+            margin-bottom: var(--gap-md);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: var(--toggle-width);
+            height: var(--toggle-height);
+            background: var(--toggle-bg);
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+
+        .toggle-switch.active {
+            background: var(--primary-gradient);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: var(--toggle-slider-offset);
+            left: var(--toggle-slider-offset);
+            width: var(--toggle-slider-size);
+            height: var(--toggle-slider-size);
+            background: white;
+            border-radius: var(--radius-full);
+            transition: all var(--transition-normal);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(var(--toggle-slider-translate));
+        }
+
+        .range-input {
+            width: 100%;
+            height: var(--range-height);
+            background: var(--toggle-bg);
+            border-radius: var(--radius-xs);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: var(--range-thumb-size);
+            height: var(--range-thumb-size);
+            background: var(--primary-gradient);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+        }
+
+        .range-value {
+            display: inline-block;
+            padding: 4px var(--gap-md);
+            background: var(--range-value-bg);
+            border-radius: var(--radius-sm);
+            font-size: var(--range-value-size);
+            font-weight: 600;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: var(--container-padding);
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: var(--spinner-size);
+            height: var(--spinner-size);
+            border: var(--spinner-border-width) solid var(--spinner-border);
+            border-top-color: var(--spinner-color);
+            border-radius: var(--radius-full);
+            animation: spin var(--animation-spin-duration) linear infinite;
+            margin: 0 auto var(--gap-lg);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        /* Footer Styles */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--backdrop-blur));
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--gap-xl);
+            z-index: 1000;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .footer-info {
+            display: flex;
+            align-items: center;
+            gap: var(--gap-md);
+        }
+
+        .footer-social {
+            display: flex;
+            align-items: center;
+            gap: var(--gap-md);
+        }
+
+        .footer-social a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--gap-xs);
+            transition: color var(--transition-fast);
+        }
+
+        .footer-social a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-social svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .opensource-badge {
+            padding: 2px var(--gap-sm);
+            background: var(--status-progress-bg);
+            border: 1px solid var(--status-progress-border);
+            border-radius: var(--radius-sm);
+            font-size: 10px;
+            color: var(--status-progress-text);
+            backdrop-filter: blur(var(--modal-blur));
+        }
+
+        /* Add bottom padding to main container to account for fixed footer */
+        .container {
+            padding-bottom: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--container-padding-mobile);
+                padding-bottom: 70px;
+            }
+
+            .header {
+                padding: var(--header-padding-mobile);
+            }
+
+            .logo-text h1 {
+                font-size: var(--logo-title-size-mobile);
+            }
+
+            .section-title {
+                font-size: var(--section-title-size-mobile);
+            }
+
+            .chapters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .analytics-section {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                padding: 0 var(--gap-md);
+                font-size: 10px;
+            }
+
+            .footer-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--gap-xs);
+            }
+
+            .footer-social {
+                gap: var(--gap-sm);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">C++</div>
+                <div class="logo-text">
+                    <h1>DSA Course</h1>
+                    <p>Master Data Structures & Algorithms</p>
+                </div>
+            </div>
+            <button class="settings-btn" onclick="openSettings()">
+                <span class="settings-icon"></span>
+                <span>Settings</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Analytics Section -->
+        <div class="analytics-section" id="analytics-section">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-icon primary"></div>
+                </div>
+                <div class="stat-label">Total Progress</div>
+                <div class="stat-value" id="total-progress">0%</div>
+                <div class="stat-subtext">Overall completion</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-icon secondary"></div>
+                </div>
+                <div class="stat-label">Videos Watched</div>
+                <div class="stat-value" id="videos-watched">0</div>
+                <div class="stat-subtext">Videos completed</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-icon success"></div>
+                </div>
+                <div class="stat-label">Watch Time</div>
+                <div class="stat-value" id="watch-time">0h</div>
+                <div class="stat-subtext">Total time spent</div>
+            </div>
+        </div>
+
+        <!-- Chapters Section -->
+        <h2 class="section-title"></h2>
+        <div class="chapters-grid" id="chapters-grid">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading chapters...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"></h3>
+                <button class="close-btn" onclick="closeSettings()"></button>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span>Theme</span>
+                    <div class="toggle-switch" id="theme-toggle" onclick="toggleTheme()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="setting-description">Switch between dark and light theme</div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span>Auto Resume Videos</span>
+                    <div class="toggle-switch" id="auto-resume-toggle" onclick="toggleSetting('auto_resume')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="setting-description">Automatically resume videos from last watched position</div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span>Remember Last Chapter</span>
+                    <div class="toggle-switch" id="save-chapter-toggle" onclick="toggleSetting('save_last_chapter')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="setting-description">Save and highlight your last opened chapter</div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span>Max Playback Speed</span>
+                    <span class="range-value" id="speed-value">2.0x</span>
+                </div>
+                <div class="setting-description">Maximum allowed playback speed</div>
+                <input type="range" class="range-input" id="max-speed-range" min="1" max="3" step="0.25" value="2"
+                    oninput="updateSpeedValue(this.value)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-info">
+            <span>Developed by <strong>Mohammad Arif</strong></span>
+            <span class="opensource-badge">Open Source</span>
+        </div>
+        <div class="footer-social">
+            <a href="https://github.com/rahmaniyaShekh" target="_blank" title="GitHub">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z"/>
+                </svg>
+                GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/md-arif-dev/" target="_blank" title="LinkedIn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19M18.5,18.5V13.2A3.26,3.26 0 0,0 15.24,9.94C14.39,9.94 13.4,10.46 12.92,11.24V10.13H10.13V18.5H12.92V13.57C12.92,12.8 13.54,12.17 14.31,12.17A1.4,1.4 0 0,1 15.71,13.57V18.5H18.5M6.88,8.56A1.68,1.68 0 0,0 8.56,6.88C8.56,5.95 7.81,5.19 6.88,5.19A1.69,1.69 0 0,0 5.19,6.88C5.19,7.81 5.95,8.56 6.88,8.56M8.27,18.5V10.13H5.5V18.5H8.27Z"/>
+                </svg>
+                LinkedIn
+            </a>
+            <a href="https://www.linkedin.com/in/md-arif-dev/" target="_blank" title="Website">
+                <svg viewBox="0 0 24 24">
+                    <path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                </svg>
+                Website
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        /* ==================== ICONS CONFIGURATION ==================== */
+        /* Change these values to customize all icons in the app */
+        const ICONS = {
+            // Header & Navigation
+            settings: `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+            </svg>`,
+
+            // Analytics Stats
+            statProgress: `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+            </svg>`,
+            statVideos: `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/>
+            </svg>`,
+            statTime: `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+            </svg>`,
+
+            // Section Headers
+            sectionChapters: `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M19,2L14,6.5V17.5L19,13V2M6.5,5C4.55,5.05 2.45,5.4 1,6.5V21.16C1,21.41 1.25,21.66 1.5,21.66C1.6,21.66 1.65,21.59 1.75,21.59C3.1,20.94 5.05,20.68 6.5,20.68C8.45,20.68 10.55,21.1 12,22C13.35,21.15 15.8,20.68 17.5,20.68C19.15,20.68 20.85,21 22.25,21.56C22.35,21.61 22.4,21.59 22.5,21.59C22.75,21.59 23,21.34 23,21.09V6.5C22.4,6.05 21.75,5.75 21,5.5V19C19.9,18.65 18.7,18.5 17.5,18.5C15.8,18.5 13.35,18.9 12,19.9C10.55,18.9 8.45,18.5 6.5,18.5C5.05,18.5 3.1,18.65 1.75,19.15V6.5C2.45,5.9 4.55,5.05 6.5,5Z"/>
+            </svg>`,
+
+            // Chapter Card Meta
+            video: `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M8,5.14V19.14L19,12.14L8,5.14Z"/>
+            </svg>`,
+            document: `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+            </svg>`,
+            completed: `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+            </svg>`,
+            checkmark: `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+            </svg>`,
+
+            // Modal
+            settingsTitle: `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+            </svg>`,
+            close: `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+            </svg>`,
+
+            // Loading
+            loading: `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z">
+                    <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+                </path>
+            </svg>`
+        };
+
+        /* ==================== TEXT CONFIGURATION ==================== */
+        /** 
+         * Centralized text management for easy localization and customization.
+         * All user-visible text strings are defined here to enable easy translation
+         * or rebranding without modifying the application logic.
+         * 
+         * To customize text:
+         * 1. Modify any value in this object
+         * 2. Changes will be automatically applied when applyStaticContent() runs
+         * 3. Group related text by functionality for better organization
+         */
+        const TEXT = {
+            // Application Branding
+            logoIcon: 'C++',
+            logoTitle: 'DSA Course', 
+            logoSubtitle: 'Master Data Structures & Algorithms',
+
+            // Interface Elements
+            settingsBtn: 'Settings',
+
+            // Analytics Dashboard Labels
+            statProgressLabel: 'Total Progress',
+            statProgressSubtext: 'Overall completion',
+            statVideosLabel: 'Videos Watched',
+            statVideosSubtext: 'Videos completed',
+            statTimeLabel: 'Watch Time',
+            statTimeSubtext: 'Total time spent',
+
+            // Page Section Headers
+            sectionChaptersTitle: 'Course Chapters',
+
+            // Chapter Card Content
+            statusCompleted: 'Completed',
+            statusInProgress: 'In Progress',
+            videosUnit: 'videos',
+            documentsUnit: 'documents',
+            completedUnit: 'completed',
+            progressLabel: 'Progress',
+
+            // Settings Modal Configuration
+            modalTitle: 'Settings',
+            themeLabel: 'Theme',
+            themeDesc: 'Switch between dark and light theme',
+            autoResumeLabel: 'Auto Resume Videos',
+            autoResumeDesc: 'Automatically resume videos from last watched position',
+            rememberChapterLabel: 'Remember Last Chapter',
+            rememberChapterDesc: 'Save and highlight your last opened chapter',
+            maxSpeedLabel: 'Max Playback Speed',
+            maxSpeedDesc: 'Maximum allowed playback speed',
+
+            // Loading States
+            loadingText: 'Loading chapters...'
+        };
+
+        /* ==================== APPLICATION STATE ==================== */
+        /** 
+         * Global variables for managing application state.
+         * These variables are populated during initialization and updated
+         * as the user interacts with the application.
+         */
+        let chapters = {{ days | tojson }};         // Course structure from Flask backend
+        let progressData = {};                       // Video progress data from database
+        let analyticsData = {};                     // Analytics and statistics data
+        let settings = {};                          // User preferences and settings
+
+        console.log('[INIT] Chapters page loaded');
+        console.log('[INIT] Chapters:', Object.keys(chapters));
+
+        /**
+         * Apply static content (icons and text) to HTML elements.
+         * 
+         * This function populates all static HTML elements with their configured
+         * content from the ICONS and TEXT objects. It's called during initialization
+         * to ensure consistent branding and easy customization.
+         * 
+         * The function targets elements by their CSS selectors and updates:
+         * - Icon elements using innerHTML for SVG content
+         * - Text elements using textContent for label strings
+         */
+        function applyStaticContent() {
+            // Header Section Configuration
+            document.querySelector('.logo-icon').textContent = TEXT.logoIcon;
+            document.querySelector('.logo-text h1').textContent = TEXT.logoTitle;
+            document.querySelector('.logo-text p').textContent = TEXT.logoSubtitle;
+            document.querySelector('.settings-icon').innerHTML = ICONS.settings;
+
+            // Stats
+            const statIcons = document.querySelectorAll('.stat-icon');
+            statIcons[0].innerHTML = ICONS.statProgress;
+            statIcons[1].innerHTML = ICONS.statVideos;
+            statIcons[2].innerHTML = ICONS.statTime;
+
+            const statLabels = document.querySelectorAll('.stat-label');
+            statLabels[0].textContent = TEXT.statProgressLabel;
+            statLabels[1].textContent = TEXT.statVideosLabel;
+            statLabels[2].textContent = TEXT.statTimeLabel;
+
+            const statSubtexts = document.querySelectorAll('.stat-subtext');
+            statSubtexts[0].textContent = TEXT.statProgressSubtext;
+            statSubtexts[1].textContent = TEXT.statVideosSubtext;
+            statSubtexts[2].textContent = TEXT.statTimeSubtext;
+
+            // Section Title
+            document.querySelector('.section-title').innerHTML = `${ICONS.sectionChapters} ${TEXT.sectionChaptersTitle}`;
+
+            // Settings Modal
+            document.querySelector('.modal-title').innerHTML = `${ICONS.settingsTitle} ${TEXT.modalTitle}`;
+            document.querySelector('.close-btn').innerHTML = ICONS.close;
+
+            // Settings Items
+            const settingLabels = document.querySelectorAll('.setting-item .setting-label > span:first-child');
+            const settingDescs = document.querySelectorAll('.setting-description');
+            settingLabels[0].textContent = TEXT.themeLabel;
+            settingDescs[0].textContent = TEXT.themeDesc;
+            settingLabels[1].textContent = TEXT.autoResumeLabel;
+            settingDescs[1].textContent = TEXT.autoResumeDesc;
+            settingLabels[2].textContent = TEXT.rememberChapterLabel;
+            settingDescs[2].textContent = TEXT.rememberChapterDesc;
+            settingLabels[3].textContent = TEXT.maxSpeedLabel;
+            settingDescs[3].textContent = TEXT.maxSpeedDesc;
+        }
+
+        /* ==================== INITIALIZATION ==================== */
+        /**
+         * Application initialization sequence.
+         * Runs when the DOM is fully loaded and sets up the application state.
+         * 
+         * Initialization order:
+         * 1. Apply static content (icons and text)
+         * 2. Load user settings from backend
+         * 3. Load analytics data for dashboard
+         * 4. Load video progress data
+         * 5. Render chapter grid with progress indicators
+         */
+        document.addEventListener('DOMContentLoaded', async function () {
+            applyStaticContent();
+            await loadSettings();
+            await loadAnalytics(); 
+            await loadProgress();
+            renderChapters();
+        });
+
+        /* ==================== SETTINGS MANAGEMENT ==================== */
+        /**
+         * Load user settings from the backend API.
+         * 
+         * Fetches settings from /api/settings endpoint and applies them to the UI.
+         * Settings include theme preference, auto-resume behavior, and playback options.
+         * Also handles theme application and UI state updates.
+         * 
+         * @async
+         * @function loadSettings
+         */
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                settings = await response.json();
+                console.log('[SETTINGS] Loaded:', settings);
+
+                // Apply saved theme to document body
+                if (settings.theme === 'light') {
+                    document.body.classList.add('light-theme');
+                }
+
+                // Update settings UI elements to reflect current state
+                updateSettingsUI();
+            } catch (error) {
+                console.error('[SETTINGS] Error loading:', error);
+            }
+        }
+
+        /**
+         * Load analytics data from the backend API.
+         * 
+         * Fetches comprehensive analytics including completion rates,
+         * watch time statistics, and per-chapter progress data.
+         * Updates the analytics dashboard with current statistics.
+         * 
+         * @async
+         * @function loadAnalytics
+         */
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/api/analytics');
+                analyticsData = await response.json();
+                console.log('[ANALYTICS] Loaded:', analyticsData);
+                updateAnalytics();
+            } catch (error) {
+                console.error('[ANALYTICS] Error loading:', error);
+            }
+        }
+
+        // Load progress
+        async function loadProgress() {
+            try {
+                const response = await fetch('/api/get-all-progress');
+                progressData = await response.json();
+                console.log('[PROGRESS] Loaded:', Object.keys(progressData).length, 'videos');
+            } catch (error) {
+                console.error('[PROGRESS] Error loading:', error);
+            }
+        }
+
+        // Update analytics display
+        function updateAnalytics() {
+            const totalVideos = Object.keys(chapters).reduce((sum, ch) =>
+                sum + chapters[ch].videos.length, 0);
+
+            const watchedVideos = analyticsData.completed_videos || 0;
+            const totalProgress = totalVideos > 0 ?
+                Math.round((watchedVideos / totalVideos) * 100) : 0;
+
+            const watchTimeSeconds = analyticsData.total_watch_time_seconds || 0;
+            const watchTimeHours = (watchTimeSeconds / 3600).toFixed(1);
+
+            document.getElementById('total-progress').textContent = totalProgress + '%';
+            document.getElementById('videos-watched').textContent = watchedVideos;
+            document.getElementById('watch-time').textContent = watchTimeHours + 'h';
+        }
+
+        // Render chapters
+        function renderChapters() {
+            const grid = document.getElementById('chapters-grid');
+            grid.innerHTML = '';
+
+            let chapterIndex = 1;
+            for (const [chapterName, content] of Object.entries(chapters)) {
+                const stats = analyticsData.chapter_stats?.[chapterName] || {
+                    total_videos: 0,
+                    completed_videos: 0,
+                    avg_progress: 0
+                };
+
+                const totalVideos = content.videos.length;
+                const completedVideos = stats.completed_videos || 0;
+                const progress = stats.avg_progress || 0;
+                const isCompleted = completedVideos === totalVideos && totalVideos > 0;
+
+                const card = document.createElement('a');
+                card.className = 'chapter-card';
+                card.href = `/player/${encodeURIComponent(chapterName)}`;
+
+                card.innerHTML = `
+                    <div class="chapter-header">
+                        <div class="chapter-number">${chapterIndex}</div>
+                        ${isCompleted ?
+                        `<div class="chapter-status completed">${ICONS.checkmark} ${TEXT.statusCompleted}</div>` :
+                        progress > 0 ?
+                            `<div class="chapter-status">${TEXT.statusInProgress}</div>` : ''}
+                    </div>
+                    <div class="chapter-title">${chapterName}</div>
+                    <div class="chapter-meta">
+                        <div class="meta-item">
+                            <span class="meta-icon">${ICONS.video}</span>
+                            <span>${totalVideos} ${TEXT.videosUnit}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">${ICONS.document}</span>
+                            <span>${content.pdfs.length} ${TEXT.documentsUnit}</span>
+                        </div>
+                        ${completedVideos > 0 ? `
+                        <div class="meta-item">
+                            <span class="meta-icon">${ICONS.completed}</span>
+                            <span>${completedVideos} ${TEXT.completedUnit}</span>
+                        </div>` : ''}
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>${TEXT.progressLabel}</span>
+                            <span>${Math.round(progress)}%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+                chapterIndex++;
+            }
+        }
+
+        // Settings modal
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('show');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('show');
+        }
+
+        function updateSettingsUI() {
+            // Update theme toggle
+            const isLightTheme = settings.theme === 'light';
+            const themeToggle = document.getElementById('theme-toggle');
+            if (isLightTheme) {
+                themeToggle.classList.add('active');
+            }
+
+            // Update toggles
+            if (settings.auto_resume === 'true') {
+                document.getElementById('auto-resume-toggle').classList.add('active');
+            }
+            if (settings.save_last_chapter === 'true') {
+                document.getElementById('save-chapter-toggle').classList.add('active');
+            }
+
+            // Update speed slider
+            const maxSpeed = parseFloat(settings.max_playback_speed || 2.0);
+            document.getElementById('max-speed-range').value = maxSpeed;
+            document.getElementById('speed-value').textContent = maxSpeed.toFixed(2) + 'x';
+        }
+
+        async function toggleTheme() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const isLight = !document.body.classList.contains('light-theme');
+
+            if (isLight) {
+                document.body.classList.add('light-theme');
+                themeToggle.classList.add('active');
+                settings.theme = 'light';
+            } else {
+                document.body.classList.remove('light-theme');
+                themeToggle.classList.remove('active');
+                settings.theme = 'dark';
+            }
+
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ theme: settings.theme })
+                });
+                console.log('[SETTINGS] Theme changed to:', settings.theme);
+            } catch (error) {
+                console.error('[SETTINGS] Error saving theme:', error);
+            }
+        }
+
+        async function toggleSetting(settingKey) {
+            const toggle = document.getElementById(settingKey.replace('_', '-') + '-toggle');
+            const isActive = toggle.classList.contains('active');
+
+            toggle.classList.toggle('active');
+
+            settings[settingKey] = !isActive ? 'true' : 'false';
+
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ [settingKey]: settings[settingKey] })
+                });
+                console.log('[SETTINGS] Updated:', settingKey, '=', settings[settingKey]);
+            } catch (error) {
+                console.error('[SETTINGS] Error saving:', error);
+            }
+        }
+
+        async function updateSpeedValue(value) {
+            const speed = parseFloat(value);
+            document.getElementById('speed-value').textContent = speed.toFixed(2) + 'x';
+            settings.max_playback_speed = speed.toString();
+
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ max_playback_speed: speed.toString() })
+                });
+                console.log('[SETTINGS] Updated max speed:', speed);
+            } catch (error) {
+                console.error('[SETTINGS] Error saving:', error);
+            }
+        }
+
+        // Close modal on outside click
+        document.getElementById('settings-modal').onclick = function (e) {
+            if (e.target.id === 'settings-modal') {
+                closeSettings();
+            }
+        };
+    </script>
+</body>
+
+</html>
