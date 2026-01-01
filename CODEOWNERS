@@ -1,0 +1,26 @@
+# Code Owners
+# This file defines who owns specific parts of the codebase
+# and who should review changes to those areas.
+
+# Global ownership - all files
+* @rahmaniyaShekh
+
+# Frontend templates and styling
+/templates/ @rahmaniyaShekh
+*.html @rahmaniyaShekh
+*.css @rahmaniyaShekh
+
+# Backend Python code
+*.py @rahmaniyaShekh
+/app.py @rahmaniyaShekh
+
+# Documentation
+*.md @rahmaniyaShekh
+/docs/ @rahmaniyaShekh
+
+# Configuration files
+.gitignore @rahmaniyaShekh
+requirements.txt @rahmaniyaShekh
+
+# GitHub configuration
+/.github/ @rahmaniyaShekh
