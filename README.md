@@ -1,25 +1,25 @@
-# C++ DSA Course - Modern Video Learning Platform
+# Offline Course Player - Modern Video Learning Platform
 
-## 🎥 Advanced Learning Management System with Analytics Dashboard
+## Advanced Learning Management System with Analytics Dashboard
 
 A comprehensive, modern video learning platform built with Flask featuring analytics dashboard, progress tracking, settings management, and customizable UI themes. Perfect for organizing and tracking progress through course content.
 
-## ✨ Key Features
+## Key Features
 
-### 🎯 **Analytics Dashboard**
+### Analytics Dashboard
 - **Comprehensive Analytics**: Total progress percentage, videos watched, and total watch time
 - **Chapter-wise Statistics**: Per-chapter completion rates and progress tracking
 - **Real-time Updates**: Analytics update dynamically as you progress through content
 - **Visual Progress Indicators**: Beautiful progress bars and completion status indicators
 
-### 📊 **Advanced Settings Management**
+### Advanced Settings Management
 - **Theme Switching**: Toggle between modern dark and light themes with smooth transitions
 - **Auto-Resume Control**: Enable/disable automatic video resumption from last position
 - **Playback Speed Limits**: Configure maximum allowed playback speed (1x to 3x)
 - **Last Chapter Memory**: Remember and highlight your last accessed chapter
 - **Persistent Settings**: All preferences saved to database and restored on startup
 
-### 🎬 **Enhanced Video Player**
+### Enhanced Video Player
 - **YouTube-Style Interface**: Professional video controls with modern UI
 - **Smart Resume**: Automatically resumes videos from where you left off
 - **Progress Tracking**: Saves viewing progress every 3 seconds
@@ -27,7 +27,7 @@ A comprehensive, modern video learning platform built with Flask featuring analy
 - **Completion Detection**: Auto-marks videos as watched at 90% completion
 - **Theater Mode**: Distraction-free viewing experience
 
-### 🎨 **Modern UI & Theming**
+### Modern UI & Theming
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile
 - **Material Design Icons**: Beautiful SVG icons throughout the interface
 - **Glass Morphism Effects**: Modern backdrop blur and transparency effects
@@ -35,14 +35,14 @@ A comprehensive, modern video learning platform built with Flask featuring analy
 - **CSS Custom Properties**: Fully customizable color schemes and sizing
 - **Smooth Transitions**: Professional animations and hover effects
 
-### 🗂️ **Smart Content Organization**
+### Smart Content Organization
 - **Chapter Navigation**: Easy switching between course chapters/folders
 - **Grid Layout**: Modern card-based chapter display with preview information
 - **Progress Visualization**: Visual progress bars on each chapter card
 - **Resource Management**: PDF and document display alongside videos
 - **Search-Friendly Structure**: Organized file system for easy content management
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Python 3.7 or higher
@@ -78,7 +78,7 @@ python app.py
 http://localhost:5000
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 C++ DSA Course/
@@ -96,7 +96,7 @@ C++ DSA Course/
 └── icons/                     # Custom icon assets (if any)
 ```
 
-## 🎮 Keyboard Shortcuts
+## Keyboard Shortcuts
 
 ### Video Player Controls
 | Key | Action |
@@ -117,7 +117,7 @@ C++ DSA Course/
 | `Esc` | Close modals/settings |
 | `Ctrl + ,` | Open settings (on chapters page) |
 
-## 💾 Database Schema
+## Database Schema
 
 The app uses SQLite with two main tables:
 
@@ -133,11 +133,11 @@ The app uses SQLite with two main tables:
 - **completed**: Boolean flag (1 if >90% watched)
 
 ### **user_settings** Table
-- **setting_key**: Setting identifier (theme, auto_resume, etc.)
+- **setting_key**: Setting identifier (theme, auto_resume, current_playback_speed, etc.)
 - **setting_value**: Setting value
 - **updated_at**: Last modification timestamp
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Analytics
 ```http
@@ -162,13 +162,15 @@ Response: {
     "theme": "dark",
     "auto_resume": "true",
     "save_last_chapter": "true",
-    "max_playback_speed": "2.0"
+    "max_playback_speed": "2.0",
+    "current_playback_speed": "1.25"
 }
 
 POST /api/settings
 Body: {
     "theme": "light",
-    "max_playback_speed": "2.5"
+    "max_playback_speed": "2.5",
+    "current_playback_speed": "1.5"
 }
 ```
 
@@ -201,7 +203,7 @@ Response: {
 }
 ```
 
-## 🎨 UI Features & Customization
+## UI Features & Customization
 
 ### Analytics Dashboard (`/`)
 - **Statistics Cards**: Total progress, videos watched, and watch time
@@ -227,7 +229,7 @@ Response: {
 - **Material Icons**: Consistent iconography throughout the application
 - **Typography**: Clean, readable font hierarchy
 
-## 🔧 Configuration & Customization
+## Configuration & Customization
 
 ### Customizing Colors and Themes
 All colors are defined as CSS custom properties in `/templates/chapters.html`:
@@ -270,7 +272,7 @@ const TEXT = {
 };
 ```
 
-## 🚀 Advanced Usage
+## Advanced Usage
 
 ### Content Organization Best Practices
 1. **Naming Convention**: Use descriptive folder names (e.g., "Day - 01", "Chapter 1 - Introduction")
@@ -284,40 +286,33 @@ const TEXT = {
 - **Efficient Queries**: Database queries optimized for large course libraries
 - **Caching**: Static assets cached for faster load times
 
-### Multi-Course Support
-To use this system for multiple courses:
-1. Create separate folders for each course in `static/`
-2. Modify the Flask routes to handle course selection
-3. Update the database schema to include course identifiers
-4. Customize the UI to show course selection
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
 **Videos not playing:**
-- ✅ Check video format is supported (mp4 recommended)
-- ✅ Verify file paths are correct in browser console
-- ✅ Ensure videos are placed in `static/` folder
-- ✅ Check browser media codec support
+- Check video format is supported (mp4 recommended)
+- Verify file paths are correct in browser console
+- Ensure videos are placed in `static/` folder
+- Check browser media codec support
 
 **Progress not saving:**
-- ✅ Check browser console for API errors
-- ✅ Verify `course_progress.db` exists and is writable
-- ✅ Ensure Flask app has proper file system permissions
-- ✅ Check network connectivity to localhost:5000
+- Check browser console for API errors
+- Verify `course_progress.db` exists and is writable
+- Ensure Flask app has proper file system permissions
+- Check network connectivity to localhost:5000
 
 **Settings not persisting:**
-- ✅ Check database connectivity
-- ✅ Verify user_settings table exists
-- ✅ Check browser local storage permissions
-- ✅ Look for JavaScript errors in console
+- Check database connectivity
+- Verify user_settings table exists
+- Check browser local storage permissions
+- Look for JavaScript errors in console
 
 **UI not responsive:**
-- ✅ Clear browser cache and cookies
-- ✅ Check for JavaScript errors in console
-- ✅ Try different browser (Chrome/Firefox recommended)
-- ✅ Verify CSS custom properties support
+- Clear browser cache and cookies
+- Check for JavaScript errors in console
+- Try different browser (Chrome/Firefox recommended)
+- Verify CSS custom properties support
 
 ### Debug Mode
 Enable debug mode by setting `debug=True` in `app.py` for detailed error messages.
@@ -325,66 +320,181 @@ Enable debug mode by setting `debug=True` in `app.py` for detailed error message
 ### Database Inspection
 Use `python check_database.py` to view database contents and verify data integrity.
 
-## 🔮 Future Enhancement Ideas
+## Contributing
 
-### Planned Features
-- [ ] **Multi-user Authentication**: User accounts and personalized progress
-- [ ] **Video Thumbnails**: Auto-generate thumbnails from video frames
-- [ ] **Advanced Search**: Full-text search across video titles and descriptions
-- [ ] **Bookmarks System**: Save favorite moments in videos
-- [ ] **Note-taking**: Integrated note-taking with timestamps
-- [ ] **Quiz Integration**: Chapter-end quizzes and assessments
-- [ ] **Certificate System**: Completion certificates and badges
-- [ ] **Mobile App**: Native mobile applications
+We welcome contributions to improve this learning platform! Here's how you can help:
 
-### Technical Improvements
-- [ ] **Progressive Web App (PWA)**: Offline support and app-like experience
-- [ ] **Video Streaming**: HLS/DASH support for better video delivery
-- [ ] **CDN Integration**: Content delivery network for global access
-- [ ] **Analytics Export**: Export learning analytics to CSV/PDF
-- [ ] **API Documentation**: Complete REST API documentation
-- [ ] **Docker Support**: Containerized deployment options
+### How to Contribute
 
-### Community Features
-- [ ] **Discussion Threads**: Chapter and video-specific discussions
-- [ ] **Study Groups**: Collaborative learning features
-- [ ] **Progress Sharing**: Social features for sharing achievements
-- [ ] **Instructor Dashboard**: Content management for educators
+1. **Fork the repository** on GitHub
+2. **Create a feature branch** from main: `git checkout -b feature/amazing-feature`
+3. **Make your changes** and test them thoroughly
+4. **Commit your changes** with clear, descriptive messages
+5. **Push to your branch**: `git push origin feature/amazing-feature`
+6. **Open a Pull Request** with a detailed description of your changes
 
-## 🤝 Contributing
+### Development Areas
 
-We welcome contributions! Areas where you can help:
+#### Frontend Development
+- **UI/UX Improvements**: Enhance user interface and experience
+- **Accessibility**: Implement ARIA labels, keyboard navigation, screen reader support
+- **Performance**: Optimize loading times and smooth animations
+- **Mobile Experience**: Improve responsive design and touch interactions
+- **Theme System**: Extend theming capabilities and color schemes
 
-### Development
-- **Frontend**: Improve UI/UX, add new features
-- **Backend**: Optimize API endpoints, add new functionality
-- **Testing**: Write unit tests and integration tests
-- **Documentation**: Improve docs and add tutorials
+#### Backend Development
+- **API Enhancements**: Add new endpoints and optimize existing ones
+- **Database Optimization**: Improve query performance and schema design
+- **Error Handling**: Better error messages and exception handling
+- **Security**: Implement authentication and authorization features
+- **Caching**: Add intelligent caching for improved performance
 
-### Design
-- **UI/UX**: Design improvements and accessibility features
-- **Icons**: Create custom icon sets
-- **Themes**: Develop new color schemes and themes
+#### Testing
+- **Unit Tests**: Write comprehensive tests for backend functions
+- **Integration Tests**: Test API endpoints and database operations
+- **Frontend Testing**: Implement JavaScript testing for UI components
+- **Performance Testing**: Load testing and optimization validation
+- **Cross-browser Testing**: Ensure compatibility across different browsers
 
-### Content
-- **Templates**: Create course templates for different subjects
-- **Translations**: Add multi-language support
-- **Documentation**: Write guides and best practices
+#### Documentation
+- **API Documentation**: Complete REST API reference with examples
+- **Setup Guides**: Detailed installation and configuration instructions
+- **User Tutorials**: Step-by-step guides for platform features
+- **Developer Docs**: Contributing guidelines and code architecture
+- **Video Tutorials**: Create instructional videos for setup and usage
 
-## 📄 License & Usage
+### Code Standards
 
-This project is open-source and available for educational and commercial use. Feel free to:
-- ✅ Use it for personal learning projects
-- ✅ Adapt it for educational institutions
-- ✅ Modify and distribute with attribution
-- ✅ Use it as a base for commercial products
+#### Python/Flask Backend
+```python
+# Follow PEP 8 style guidelines
+# Use type hints where applicable
+# Add docstrings to all functions
+# Handle exceptions gracefully
 
-## 🆘 Support & Community
+def save_video_progress(video_path: str, current_time: float) -> bool:
+    """
+    Save video watching progress to database.
+    
+    Args:
+        video_path: Unique path identifier for video
+        current_time: Current playback position in seconds
+        
+    Returns:
+        bool: True if save successful, False otherwise
+    """
+    try:
+        # Implementation here
+        return True
+    except Exception as e:
+        logger.error(f"Failed to save progress: {e}")
+        return False
+```
+
+#### Frontend JavaScript
+```javascript
+// Use modern ES6+ syntax
+// Add JSDoc comments for functions
+// Follow consistent naming conventions
+// Handle errors gracefully
+
+/**
+ * Load video progress from API
+ * @param {string} videoPath - Unique video identifier
+ * @returns {Promise<Object>} Progress data object
+ */
+async function loadVideoProgress(videoPath) {
+    try {
+        const response = await fetch(`/api/get-progress/${encodeURIComponent(videoPath)}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to load progress:', error);
+        return null;
+    }
+}
+```
+
+#### CSS/Styling
+```css
+/* Use meaningful class names */
+/* Leverage CSS custom properties */
+/* Ensure responsive design */
+/* Add comments for complex selectors */
+
+.video-player-controls {
+    /* Player control bar styling */
+    background: var(--player-controls-bg);
+    border-radius: var(--radius-md);
+    transition: opacity var(--transition-fast);
+}
+
+@media (max-width: 768px) {
+    .video-player-controls {
+        /* Mobile-specific adjustments */
+        padding: var(--spacing-sm);
+    }
+}
+```
+
+### Reporting Issues
+
+When reporting bugs or requesting features:
+
+1. **Search existing issues** to avoid duplicates
+2. **Use clear, descriptive titles**
+3. **Provide detailed descriptions** with steps to reproduce
+4. **Include system information** (OS, browser, Python version)
+5. **Add screenshots or videos** if applicable
+6. **Label appropriately** (bug, enhancement, documentation, etc.)
+
+### Feature Requests
+
+Before submitting feature requests:
+
+1. **Check existing discussions** for similar ideas
+2. **Explain the use case** and problem being solved
+3. **Provide implementation suggestions** if you have ideas
+4. **Consider backward compatibility** with existing features
+5. **Think about user experience** and interface implications
+
+### Community Guidelines
+
+- **Be respectful** and constructive in all interactions
+- **Help others** by answering questions and reviewing code
+- **Share knowledge** through documentation and examples
+- **Follow the code of conduct** and maintain a welcoming environment
+- **Credit contributors** and acknowledge helpful feedback
+
+## License
+
+MIT License
+
+Copyright (c) 2026 Mohammad Arif
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+## Support & Community
 
 ### Getting Help
-- 📖 **Documentation**: Check this README for detailed information
-- 🐛 **Issues**: Report bugs and request features via GitHub issues
-- 💡 **Discussions**: Join community discussions for help and ideas
+- **Documentation**: Check this README for detailed information
+- **Issues**: Report bugs and request features via GitHub issues
+- **Discussions**: Join community discussions for help and ideas
 
 ### Acknowledgments
 Built with modern web technologies:
@@ -395,6 +505,4 @@ Built with modern web technologies:
 
 ---
 
-**Happy Learning! 🚀📚**
-
-*Transform your course content into an engaging, trackable learning experience.*
+**Transform your course content into an engaging, trackable learning experience.**
