@@ -42,58 +42,126 @@ A comprehensive, modern video learning platform built with Flask featuring analy
 - **Resource Management**: PDF and document display alongside videos
 - **Search-Friendly Structure**: Organized file system for easy content management
 
-## Getting Started
+## 🚀 Quick Start (Desktop App)
 
-### Prerequisites
-- Python 3.7 or higher
+### One-Click Launch
+
+1. **Double-click `OfflineCoursePlayer.pyw`** to start the application
+   - First launch installs required dependencies automatically (Flask, PyQt6)
+   - No command line required!
+
+2. **Select your course folder** when prompted
+   - Click "📁 Select Folder" to choose where your video content is stored
+   - The folder is remembered for future launches
+
+3. **Start learning!**
+   - Server starts automatically
+   - Browser opens to the learning platform
+   - Track your progress across sessions
+
+### Creating a Desktop Shortcut
+
+**Windows:**
+- Right-click `OfflineCoursePlayer.pyw` → Send to → Desktop (create shortcut)
+- Or right-click `start.bat` → Send to → Desktop
+
+**macOS/Linux:**
+- Create a shortcut/alias to `start.sh`
+- Make executable first: `chmod +x start.sh`
+
+---
+
+## 📋 Prerequisites
+
+- **Python 3.7+** ([Download Python](https://www.python.org/downloads/))
 - Web browser (Chrome, Firefox, Edge, or Safari)
 
-### Installation
+Dependencies (Flask, PyQt6) install automatically on first launch.
 
-1. **Clone or download** the project to your local machine
+---
 
-2. **Install required Python packages:**
-```bash
-pip install flask
+## 🖥️ Desktop App Controls
+
+| Button | Action |
+|--------|--------|
+| **▶ Start Server** | Starts the Flask server on port 5000 |
+| **⏹ Stop Server** | Gracefully stops the server |
+| **🌐 Open Browser** | Opens `http://localhost:5000` in your browser |
+| **📁 Select Folder** | Choose a new content folder |
+
+The app window shows server logs and current status.
+
+---
+
+## 📁 Content Folder Structure
+
+Organize your course content like this:
 ```
-
-3. **Organize your content** in the `static/` folder:
-```
-static/
+Your Course Folder/
 ├── Day - 01/
 │   ├── video1.mp4
 │   ├── video2.mp4
 │   └── notes.pdf
 ├── Day - 02/
-└── ...
+│   └── lecture.mp4
+└── Chapter 3/
+    └── ...
 ```
 
-4. **Run the application:**
+**Supported formats:**
+- **Video**: .mp4, .mov, .avi, .mkv, .webm
+- **Documents**: .pdf, .docx, .doc, .txt
+
+---
+
+## 💾 Where Data is Stored
+
+User settings and progress are stored separately from your course content:
+
+| Platform | Location |
+|----------|----------|
+| **Windows** | `%APPDATA%\OfflineCoursePlayer\` |
+| **macOS** | `~/Library/Application Support/OfflineCoursePlayer/` |
+| **Linux** | `~/.config/OfflineCoursePlayer/` |
+
+**Files stored:**
+- `config.json` - Selected folder path, preferences
+- `course_progress.db` - Video progress, watch history
+
+---
+
+## ⌨️ Alternative: Command Line Usage
+
+If you prefer the command line:
+
 ```bash
-python app.py
-```
+# Install dependencies manually
+pip install flask PyQt6
 
-5. **Open your browser** and navigate to:
-```
-http://localhost:5000
+# Run the desktop app
+python OfflineCoursePlayer.pyw
+
+# Or run Flask directly (no GUI)
+python app.py
 ```
 
 ## Project Structure
 
 ```
 C++ DSA Course/
+├── OfflineCoursePlayer.pyw     # 🚀 Double-click to launch (main entry)
+├── start.bat                   # Windows alternative launcher
+├── start.sh                    # macOS/Linux launcher
 ├── app.py                      # Flask backend with API endpoints
+├── config.py                   # Configuration & persistence module
+├── server.py                   # Server lifecycle management
+├── desktop_app.py              # PyQt6 desktop GUI
 ├── check_database.py           # Database inspection utility
-├── course_progress.db          # SQLite database (auto-created)
 ├── templates/
-│   ├── chapters.html          # Analytics dashboard & chapter selection
-│   ├── course.html            # Legacy interface (deprecated)
-│   └── player.html            # Modern video player interface
-├── static/                    # Your course content folders
-│   ├── Day - 01/
-│   ├── Day - 02/
-│   └── ...
-└── icons/                     # Custom icon assets (if any)
+│   ├── chapters.html           # Analytics dashboard & chapter selection
+│   └── player.html             # Modern video player interface
+├── static/                     # Default content folder (or use any folder)
+└── icons/                      # App icons
 ```
 
 ## Keyboard Shortcuts
@@ -506,3 +574,36 @@ Built with modern web technologies:
 ---
 
 **Transform your course content into an engaging, trackable learning experience.**
+
+---
+
+## 📦 Packaging as Standalone Executable
+
+To create a standalone `.exe` (Windows) or app bundle (macOS) that doesn't require Python:
+
+```bash
+# Install PyInstaller
+pip install pyinstaller
+
+# Create executable (Windows)
+pyinstaller --onefile --windowed --name "OfflineCoursePlayer" OfflineCoursePlayer.pyw
+
+# The executable will be in the 'dist' folder
+```
+
+**Note**: Copy `templates/` folder next to the executable for it to work.
+
+---
+
+## 🔒 Security Considerations
+
+This application is designed for **local, single-user desktop use**:
+
+| Aspect | Details |
+|--------|---------|
+| **Network** | Server runs on `127.0.0.1` only (not exposed to network) |
+| **Authentication** | None - designed for personal use |
+| **File Access** | Only reads from user-selected folder |
+| **Path Security** | Paths are validated to prevent directory traversal |
+
+**Not recommended for**: Shared/public servers, multi-user environments, or internet-facing deployments.

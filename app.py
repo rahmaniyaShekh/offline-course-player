@@ -13,10 +13,46 @@ Version: 2.0
 """
 
 import os
+import sys
 import sqlite3
 import json
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory
 from datetime import datetime
+
+# Import configuration module
+try:
+    from config import get_effective_static_folder, get_static_folder, set_static_folder, get_database_path
+except ImportError:
+    # Fallback if config not available (standalone mode)
+    def get_effective_static_folder():
+        return os.path.join(os.path.dirname(__file__), 'static')
+    def get_static_folder():
+        return None
+    def set_static_folder(path):
+        return False
+    def get_database_path():
+        return 'course_progress.db'
+
+
+def get_db_path():
+    """Get the database path, using config if available."""
+    try:
+        return str(get_database_path())
+    except:
+        return 'course_progress.db'
+
+
+def get_content_folder():
+    """Get the current content/static folder path."""
+    folder = get_effective_static_folder()
+    if folder and os.path.isdir(folder):
+        return folder
+    # Fallback to local static folder
+    local_static = os.path.join(os.path.dirname(__file__), 'static')
+    if os.path.isdir(local_static):
+        return local_static
+    return None
+
 
 app = Flask(__name__)
 
@@ -30,7 +66,7 @@ def init_db():
     
     Also inserts default settings if they don't exist.
     """
-    conn = sqlite3.connect('course_progress.db')
+    conn = sqlite3.connect(get_db_path())
     c = conn.cursor()
     
     # Create video progress tracking table
@@ -80,7 +116,10 @@ def index():
     Returns:
         Rendered chapters.html template with course structure
     """
-    base_path = os.path.join('static')
+    base_path = get_content_folder()
+    if not base_path or not os.path.isdir(base_path):
+        # No content folder configured
+        return render_template('chapters.html', days={})
     days = {}
 
     # Scan directory structure for course content
@@ -115,7 +154,9 @@ def player(chapter):
         Rendered player.html template with chapter content
         or redirect to index if chapter doesn't exist
     """
-    base_path = os.path.join('static')
+    base_path = get_content_folder()
+    if not base_path:
+        return redirect(url_for('index'))
     
     # Validate that the requested chapter exists
     chapter_path = os.path.join(base_path, chapter)
@@ -137,7 +178,7 @@ def player(chapter):
     
     # Save last accessed chapter if the feature is enabled
     try:
-        conn = sqlite3.connect('course_progress.db')
+        conn = sqlite3.connect(get_db_path())
         c = conn.cursor()
         c.execute("UPDATE user_settings SET setting_value = ? WHERE setting_key = 'last_chapter'", (chapter,))
         conn.commit()
@@ -187,7 +228,7 @@ def save_progress():
     
     try:
         # Connect to database and save progress
-        conn = sqlite3.connect('course_progress.db')
+        conn = sqlite3.connect(get_db_path())
         c = conn.cursor()
         c.execute('''INSERT OR REPLACE INTO video_progress 
                      (video_path, chapter, video_name, current_time, duration, playback_speed, 
@@ -232,7 +273,7 @@ def get_progress(video_path):
     print(f"[GET PROGRESS] Fetching progress for: {video_path}")
     
     try:
-        conn = sqlite3.connect('course_progress.db')
+        conn = sqlite3.connect(get_db_path())
         c = conn.cursor()
         c.execute('SELECT current_time, playback_speed, watch_percentage, completed, last_watched FROM video_progress WHERE video_path = ?',
                   (video_path,))
@@ -283,7 +324,7 @@ def get_all_progress():
     print(f"[GET ALL PROGRESS] Fetching all progress data...")
     
     try:
-        conn = sqlite3.connect('course_progress.db')
+        conn = sqlite3.connect(get_db_path())
         c = conn.cursor()
         c.execute('SELECT video_path, current_time, playback_speed, watch_percentage, completed, last_watched, duration FROM video_progress')
         results = c.fetchall()
@@ -325,7 +366,7 @@ def settings():
     Returns:
         JSON response with settings data or success status
     """
-    conn = sqlite3.connect('course_progress.db')
+    conn = sqlite3.connect(get_db_path())
     c = conn.cursor()
     
     if request.method == 'POST':
@@ -380,7 +421,7 @@ def analytics():
     print(f"[ANALYTICS] Computing analytics...")
     
     try:
-        conn = sqlite3.connect('course_progress.db')
+        conn = sqlite3.connect(get_db_path())
         c = conn.cursor()
         
         # Retrieve all video progress data from database
@@ -394,7 +435,9 @@ def analytics():
         total_watch_time = sum(r[3] * (r[1] / 100) for r in results if r[3])  # Sum actual watch time
         
         # Get actual video counts from filesystem to handle unwatched videos
-        base_path = os.path.join('static')
+        base_path = get_content_folder()
+        if not base_path:
+            return jsonify({'error': 'No content folder configured'}), 400
         actual_chapter_videos = {}
         for chapter_folder in os.listdir(base_path):
             chapter_path = os.path.join(base_path, chapter_folder)
@@ -456,6 +499,77 @@ def analytics():
     except Exception as e:
         print(f"[ANALYTICS] Error: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+# ============================================================================
+# Custom Static File Serving (for dynamic content folder)
+# ============================================================================
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """
+    Serve static files from the configured content folder.
+    
+    This allows serving content from a user-selected folder
+    rather than the default Flask static folder.
+    """
+    content_folder = get_content_folder()
+    if content_folder:
+        return send_from_directory(content_folder, filename)
+    return "Content folder not configured", 404
+
+
+# ============================================================================
+# Folder Management API Endpoints
+# ============================================================================
+
+@app.route('/api/content-folder', methods=['GET'])
+def get_content_folder_api():
+    """
+    API endpoint to get the current content folder path.
+    
+    Returns:
+        JSON with folder path and status
+    """
+    folder = get_static_folder()
+    return jsonify({
+        'folder': folder,
+        'configured': folder is not None,
+        'effective_folder': get_content_folder()
+    })
+
+
+@app.route('/api/content-folder', methods=['POST'])
+def set_content_folder_api():
+    """
+    API endpoint to set the content folder path.
+    
+    Expected JSON:
+        - folder: Absolute path to the content folder
+        
+    Returns:
+        JSON with success status
+    """
+    data = request.json
+    folder = data.get('folder')
+    
+    if not folder:
+        return jsonify({'status': 'error', 'message': 'No folder path provided'}), 400
+    
+    if not os.path.isdir(folder):
+        return jsonify({'status': 'error', 'message': 'Folder does not exist'}), 400
+    
+    if set_static_folder(folder):
+        return jsonify({
+            'status': 'success',
+            'folder': folder
+        })
+    else:
+        return jsonify({'status': 'error', 'message': 'Failed to save folder path'}), 500
+
+
+# ============================================================================
+# Application Entry Point
+# ============================================================================
 
 if __name__ == '__main__':
     """
